@@ -29,13 +29,15 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    /*private static final String BEACON_GELB_MAC = "DB:2A:D7:A7:97:56";
+    private static final String BEACON_GELB_MAC = "DB:2A:D7:A7:97:56";
     private static final String BEACON_LILA_MAC = "F6:05:BC:12:72:F3";
-    private static final String BEACON_PINK_MAC = "FD:3A:05:B5:97:C3";*/
+    private static final String BEACON_PINK_MAC = "FD:3A:05:B5:97:C3";
 
-    private static final String BEACON_GELB_MAC = "F2:1F:C9:BF:86:46";
+    /*private static final String BEACON_GELB_MAC = "F2:1F:C9:BF:86:46";
     private static final String BEACON_LILA_MAC = "C1:05:DE:50:D3:74";
-    private static final String BEACON_PINK_MAC = "F0:F5:46:78:6E:2D";
+    private static final String BEACON_PINK_MAC = "F0:F5:46:78:6E:2D";*/
+
+
     private static final long SCAN_PERIOD = 2_000;
     private BluetoothAdapter bluetoothAdapter;
     private boolean mScanning;
@@ -146,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     predictedFieldBLE = -1;
                 }
-                calibratedTextView.setText(x + "\n" + y + "\n" + z + "\nPredicted Field MF:" + predictedFieldMF + "\nPredictedField BLE:" + predictedFieldBLE);
+                calibratedTextView.setText("BLE:\nGelb:" + gelbAvg + "\nLila: " + lilaAvg + "\nPink: " + pinkAvg
+                        + "\nMF:\n" +
+                        x + "\n" + y + "\n" + z + "\nPredicted Field MF:" + predictedFieldMF + "\nPredictedField BLE:" + predictedFieldBLE);
             }
         }, SCAN_PERIOD);
     }
