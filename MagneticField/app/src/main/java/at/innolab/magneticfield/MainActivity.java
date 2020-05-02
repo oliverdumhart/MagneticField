@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView calibratedTextView;
     private Handler handler = new Handler();
     private Button button;
-    private List<Position> positions = new ArrayList<Position>();
-
     public static List<PositionMF> positionsMF = new ArrayList<>();
     public static List<PositionBLE> positionsBLE = new ArrayList<>();
 
@@ -68,11 +66,8 @@ public class MainActivity extends AppCompatActivity {
         calibratedTextView = findViewById(R.id.calibratedTextView);
         button = findViewById(R.id.button);
 
-        PositionReader reader = new PositionReader();
         PositionReaderMF readerMF = new PositionReaderMF();
 
-        InputStream is = getResources().openRawResource(R.raw.position);
-        reader.execute(is);
         InputStream isMF = getResources().openRawResource(R.raw.position_mf);
         readerMF.execute(isMF);
 
@@ -120,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void startListening(){
     private void startListening() {
         button.setEnabled(false);
         xValues.clear();
@@ -138,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 stopListening();
-                int predictedField;
                 mScanning = false;
                 bluetoothAdapter.stopLeScan(leScanCallback);
 
@@ -151,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 double lilaAvg = calcAvg(lila);
                 double gelbAvg = calcAvg(gelb);
 
-                predictedField = calculateDifferencePerField(x, y, z);
-                calibratedTextView.setText(x + "\n" + y + "\n" + z + "\nPredicted Field:" + predictedField);
                 predictedFieldMF = CalculateDifferenceMF.calculateDifferencePerFieldMF(x, y, z);
                 if(!Double.isNaN(gelbAvg) && !Double.isNaN(pinkAvg) && !Double.isNaN(lilaAvg)) {
                     predictedFieldBLE = CalculateDifferenceBLE.calculateDifferencePerFieldBLE(gelbAvg, lilaAvg, pinkAvg);
@@ -164,35 +155,8 @@ public class MainActivity extends AppCompatActivity {
                         + "\nMF:\n" +
                         x + "\n" + y + "\n" + z + "\nPredicted Field MF:" + predictedFieldMF + "\nPredictedField BLE:" + predictedFieldBLE);
             }
-        }, 1_000);
         }, SCAN_PERIOD);
     }
-
-    private int calculateDifferencePerField(double x, double y, double z) {
-        Position predictedPosition = null;
-        double smallestDifference = 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private BluetoothAdapter.LeScanCallback leScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -222,32 +186,6 @@ public class MainActivity extends AppCompatActivity {
             };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        for(Position p : positions){
-            if(predictedPosition == null){
-                predictedPosition = p;
-                smallestDifference = calculateDifference(p, x, y, z);
-            }else
-            {
-                if(calculateDifference(p, x, y, z)< smallestDifference){
-                    predictedPosition = p;
-                    smallestDifference = calculateDifference(p, x, y, z);
-                }
-            }
-
     private void scanLeDevice(final boolean enable) {
         if (enable) {
             mScanning = true;
@@ -255,43 +193,16 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mScanning = false;
             bluetoothAdapter.stopLeScan(leScanCallback);
-
-
         }
-        return predictedPosition.getField();
-    }
-
-    private double calculateDifference(Position p, double x, double y, double z) {
-        return (Math.abs(p.getX()-x))+(Math.abs(p.getY()-y))+(Math.abs(p.getZ()-z));
     }
 
 
-
-
-    private void stopListening(){
 
 
 
 
 
     private void stopListening() {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         button.setEnabled(true);
         sensorManager.unregisterListener(calibratedSensorListener);
     }
@@ -301,14 +212,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private float calcAvg(List<Float> values){
     private float calcAvg(List<Float> values) {
         float sum = 0;
-        for(float v : values){
         for (float v : values) {
             sum += v;
         }
-        return sum/values.size();
         return sum / values.size();
     }
 
@@ -318,25 +226,6 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.unregisterListener(calibratedSensorListener);
     }
 
-    public class PositionReader extends AsyncTask<InputStream, Void, List<Position>> {
-        @Override
-        protected List<Position> doInBackground(InputStream... inputStreams) {
-            List<Position> positions = new ArrayList<Position>();
-            try {
-                JSONObject obj = new JSONObject(loadJSONFromAsset(inputStreams[0]));
-                JSONArray array = obj.getJSONArray("data");
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject o = array.getJSONObject(i);
-                    Position p = new Position();
-                    p.setX(o.getDouble("x-Achse"));
-                    p.setY(o.getDouble("y-Achse"));
-                    p.setZ(o.getDouble("z-Achse"));
-                    p.setField(o.getInt("Feld"));
-                    positions.add(p);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
 
 
@@ -357,90 +246,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            return positions;
-        }
-
-        @Override
-        protected void onPostExecute(List<Position> positions) {
-            MainActivity.this.positions = positions;
-        }
 
 
 
 
 
-        public String loadJSONFromAsset(InputStream is) {
-            String json = null;
-            try {
-                int size = is.available();
-                byte[] buffer = new byte[size];
-                is.read(buffer);
-                is.close();
-                json = new String(buffer, "UTF-8");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return null;
-            }
-            return json;
-        }
-    }
+
 }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
