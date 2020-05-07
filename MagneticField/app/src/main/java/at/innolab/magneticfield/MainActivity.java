@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String BEACON_PINK_MAC = "F0:F5:46:78:6E:2D";*/
 
 
-    private static final long SCAN_PERIOD = 2_000;
+    private static final long SCAN_PERIOD = 5_000;
+
     private BluetoothAdapter bluetoothAdapter;
     private boolean mScanning;
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     public static List<PositionMF> positionsMF = new ArrayList<>();
     public static List<PositionBLE> positionsBLE = new ArrayList<>();
+    public static List<PositionBLE> positionsBLEDistance = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
         InputStream isBLE = getResources().openRawResource(R.raw.position_ble);
         readerBLE.execute(isBLE);
+
+        PositionReaderBLEDistance readerBLEDistance = new PositionReaderBLEDistance();
+
+        InputStream isBLEDistance = getResources().openRawResource(R.raw.position_ble_distance);
+        readerBLEDistance.execute(isBLEDistance);
 
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -137,23 +144,32 @@ public class MainActivity extends AppCompatActivity {
 
                 int predictedFieldMF;
                 int predictedFieldBLE;
+                int predictedFieldBLEDistance;
                 double x = calcAvg(xValues);
                 double y = calcAvg(yValues);
                 double z = calcAvg(zValues);
                 double pinkAvg = calcAvg(pink);
                 double lilaAvg = calcAvg(lila);
                 double gelbAvg = calcAvg(gelb);
+                int combinedPredictedField;
 
                 predictedFieldMF = CalculateDifferenceMF.calculateDifferencePerFieldMF(x, y, z);
+                predictedFieldBLEDistance = CalculateFieldBLEDistance.calculateField(gelbAvg, lilaAvg, pinkAvg);
                 if(!Double.isNaN(gelbAvg) && !Double.isNaN(pinkAvg) && !Double.isNaN(lilaAvg)) {
                     predictedFieldBLE = CalculateDifferenceBLE.calculateDifferencePerFieldBLE(gelbAvg, lilaAvg, pinkAvg);
+                    combinedPredictedField = (int) Math.round((0.25*predictedFieldMF + 0.5*predictedFieldBLEDistance + 0.25*predictedFieldBLE));
                 }
                 else{
                     predictedFieldBLE = -1;
+                    combinedPredictedField = (int) Math.round((0.5*predictedFieldMF + 0.5*predictedFieldBLEDistance));
                 }
+
+
                 calibratedTextView.setText("BLE:\nGelb:" + gelbAvg + "\nLila: " + lilaAvg + "\nPink: " + pinkAvg
                         + "\nMF:\n" +
-                        x + "\n" + y + "\n" + z + "\nPredicted Field MF:" + predictedFieldMF + "\nPredictedField BLE:" + predictedFieldBLE);
+                        x + "\n" + y + "\n" + z + "\nPredicted Field MF:" + predictedFieldMF + "\nPredictedField BLE:" + predictedFieldBLE
+                        + "\nPredictedField BLE Distance:" + predictedFieldBLEDistance
+                        + "\nCombinedPredictedField: " + combinedPredictedField);
             }
         }, SCAN_PERIOD);
     }

@@ -1,44 +1,6 @@
 package at.innolab.magneticfield;
 
 public class PositionBLE {
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private double gelb;
     private double lila;
     private double pink;
