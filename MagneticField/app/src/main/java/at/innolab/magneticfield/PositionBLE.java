@@ -1,5 +1,12 @@
 package at.innolab.magneticfield;
 
+/**
+ * Representation of one field in the test-room
+ * Contains either
+ *      the pre measured RSSI values for the 3 Beacons and the field number
+ *      or
+ *      the pre calculated distance from the field center to the 3 Beacons and the field number
+ */
 public class PositionBLE {
     private double gelb;
     private double lila;

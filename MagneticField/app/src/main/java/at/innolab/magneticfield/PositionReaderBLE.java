@@ -11,7 +11,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Reads the BLE RSSI JSON data
+ * Used to read the pre defined position data from a JSON file and return a List of positions to
+ * the Main Activity
+ */
 public class PositionReaderBLE extends AsyncTask<InputStream, Void, List<PositionBLE>> {
+
+    /**
+     * Reads the position data from a JSON file and generates a list of positions
+     *
+     * @param inputStreams the inputstream from the JSON file
+     * @return a List of positions
+     */
     @Override
     protected List<PositionBLE> doInBackground(InputStream... inputStreams) {
         List<PositionBLE> positions = new ArrayList<>();
@@ -30,15 +42,25 @@ public class PositionReaderBLE extends AsyncTask<InputStream, Void, List<Positio
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return positions;
     }
 
+    /**
+     * Updates the List of positionsBLE in the MainActivity after the AsyncTask finished
+     *
+     * @param positions List of the read positions
+     */
     @Override
     protected void onPostExecute(List<PositionBLE> positions) {
         MainActivity.positionsBLE = positions;
     }
 
+    /**
+     * Loads the content of the JSON file
+     *
+     * @param is Inputstream of the JSON file
+     * @return the content of the file as string
+     */
     public String loadJSONFromAsset(InputStream is) {
         String json = null;
         try {

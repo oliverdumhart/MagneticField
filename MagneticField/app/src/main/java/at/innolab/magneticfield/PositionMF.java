@@ -1,6 +1,11 @@
 package at.innolab.magneticfield;
+
+/**
+ * Representation of one field in the test-room
+ * Contains the values for the 3 axes of the magnetic field sensor and the field number
+ */
 public class PositionMF {
-        private double x;
+    private double x;
     private double y;
     private double z;
     private int field;
